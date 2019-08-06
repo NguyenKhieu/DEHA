@@ -64,4 +64,21 @@ class SanPhamController extends Controller
     {
 
     }
+    public function update(Request $request, $id)
+    {
+
+        $validator = Validator::make(Input::all(), $this->rules);
+        if ($validator->fails()) {
+            return Response::json(array('errors' => $validator->getMessageBag()->toArray()));
+        } else {
+            $this->sanpham->updateSanPham($request->all(), $id);
+            $product = SanPham::findOrFail($id);
+            $type    = ProductType::find($product->id_type);
+            if($product->id_type == $type->id){
+                return response()->json(['sanpham'=>$product, 'type'=>$type]);
+            }
+        }
+
+    }
+
 }
