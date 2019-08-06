@@ -80,5 +80,11 @@ class SanPhamController extends Controller
         }
 
     }
+    public function destroy($id)
+    {
+        $sanpham = SanPham::findOrFail($id);
+        $sanpham->delete();
+        return response()->json($sanpham);
+    }
 
 }
