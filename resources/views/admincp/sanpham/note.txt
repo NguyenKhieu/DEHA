@@ -1,0 +1,149 @@
+$(document).ready(function(){
+      $(document).on('click', '#addType', function() {
+        // $('.modal-title').text('Add');
+        $('#addModal').modal();
+      });
+
+    $('.modal-footer').on('click', '.addType', function() {
+      $.ajaxSetup({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });
+
+        // id = $(this).data('id');
+        // console.log($('input[type="file"]'));
+        $.ajax({
+          url:  'admincp/loaisanpham',
+          type: 'POST',
+          data: {
+            'loaisanpham'    : $('#loaisanpham_add').val(),
+            //   'anh'     : $('#img_add').val(),
+            'noidung'  : $('#noidung_add').val(),
+            'thuonghieu' : $('#thuonghieu_add').val(),
+          },
+          success:function(data){
+            // alert(data.id);
+            console.log(data);
+            $('.errorName').addClass('hidden');
+            $('.errorNoidung').addClass('hidden');
+            $('.errorThuonghieu').addClass('hidden');
+            if(data.errors){
+              setTimeout(function () {
+                $('#addModal').modal('show');
+                toastr.error('Validation error!', 'Error Alert', {timeOut: 500});
+              }, 500);
+              if(data.errors.loaisanpham){
+                $('.errorName').removeClass('hidden');
+                $('.errorName').text(data.errors.loaisanpham);
+              }
+              if(data.errors.noidung){
+                $('.errorTT').removeClass('hidden');
+                $('.errorTT').text(data.errors.noidung);
+              }
+              if(data.errors.thuonghieu){
+                $('.errorDanhgia').removeClass('hidden');
+                $('.errorDanhgia').text(data.errors.thuonghieu);
+              }
+            }else{
+              toastr.success('Successfully added Post!', 'Success Alert', {timeOut: 5000});
+              // $('#postTable').append("<tr class='item" + data.id + "'>" + "<td scope='row'><?php $stt =0; ?>"+ "@foreach($type as $loaisp) <?php $stt=$stt+1; ?> @endforeach" + "<?php echo $stt; ?>" + "</td><td>" + data.loaisanpham + "</td><td>" + data.noidung + "</td><td>" + data.thuonghieu + "</td><td><button data-id='" + data.id + "' data-title='" + data.name + "' id='edit' " + " class='btn btn-primary'><span class='glyphicon glyphicon-edit'> Sửa </button><button data-id='" + data.id + "' data-title='" + data.name + "' class='btn btn-danger delete'><span class='glyphicon glyphicon-trash'> Xóa </button></td></tr>");
+              $('#postTable').append("<tr class='item" + data.id + "'>" + "<td>" + data.loaisanpham + "</td><td>" + data.noidung + "</td><td>" + data.thuonghieu + "</td><td><button data-id='" + data.id + "' data-title='" + data.name + "' id='edit' " + " class='btn btn-primary'><span class='glyphicon glyphicon-edit'> Sửa </button><button data-id='" + data.id + "' data-title='" + data.name + "' class='btn btn-danger delete'><span class='glyphicon glyphicon-trash'> Xóa </button></td></tr>");
+            }
+          }
+        });
+      });
+    });
+
+
+
+    //Modal Edit
+
+    $(document).on('click', '#edit', function() {
+      // $('.modal-title').text('Add');
+      $('#editModal').modal('show');
+      id = $(this).data('id');
+      // alert(id);
+    });
+    $('.modal-footer').on('click', '.edit', function() {
+      $.ajaxSetup({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });
+      // id = $(this).data('id');
+      $.ajax({
+        url:  'admincp/loaisanpham/'+id ,
+        type: 'PUT',
+        data: {
+          'loaisanpham': $('#loaisp_edit').val(),
+          'noidung' : $('#noidung_edit').val(),
+          'thuonghieu' : $('#thuonghieu_edit').val(),
+        },
+        success:function(data){
+          // alert(data.id);
+          console.log(data);
+          $('.errorName').addClass('hidden');
+          $('.errorThuonghieu').addClass('hidden');
+          $('.errorNoidung').addClass('hidden');
+          if(data.errors){
+            setTimeout(function () {
+              $('#editModal').modal('show');
+              toastr.error('Validation error!', 'Error Alert', {timeOut: 500});
+            }, 500);
+            if(data.errors.loaisanpham){
+              $('.errorName').removeClass('hidden');
+              $('.errorName').text(data.errors.loaisanpham);
+            }
+            if(data.errors.noidung){
+              $('.errorNoidung').removeClass('hidden');
+              $('.errorNoidung').text(data.errors.noidung);
+            }
+            if(data.errors.thuonghieu){
+              $('.errorThuonghieu').removeClass('hidden');
+              $('.errorThuonghieu').text(data.errors.thuonghieu);
+            }
+
+          }else{
+            toastr.success('Successfully edited Product!', 'Success Alert', {timeOut: 5000});
+            $('.item' + data.id).replaceWith("<tr class='item" + data.id + "'>" + "<td>" + data.loaisanpham + "</td><td>" + data.noidung + "</td><td>" + data.thuonghieu + "</td><td><button data-id='" + data.id + "' data-title='" + data.name + "' id='edit' " + " class='btn btn-primary'><span class='glyphicon glyphicon-edit'> Sửa </button><button data-id='" + data.id + "' data-title='" + data.name + "' id='delete' " + " class='btn btn-danger'><span class='glyphicon glyphicon-trash'> Xóa </button></td></tr>");
+            // $('#postTable').append("<tr class='item" + data.id + "'>" + "<td>" + data.name + "</td><td>" + data.danhgia + "</td><td>" + data.gia + "</td><td><button data-id='" + data.id + "' data-title='" + data.name "' id='show' class='btn btn-success'>Xem</button><button data-id='" + data.id + "' data-title='" + data.name + "' id='edit' class='btn btn-primary'>Sửa</button><button data-id='" + data.id "' data-title='" + data.name + "' id='delete' class='btn btn-danger'>Xóa</button></td></tr>");
+            // $('#postTable').append("<tr class='item" + data.id + "'>" + "<td>" + data.name + "</td><td>" + data.tomtat + "</td><td>" + data.danhgia + "</td><td>" + data.gia + "</td><td><button data-id='" + data.id + "' data-title='" + data.name + "' id='show' " + " class='btn btn-success'>Xem</button><button data-id='" + data.id + "' data-title='" + data.name + "' id='edit' " + " class='btn btn-primary'>Sửa</button><button data-id='" + data.id + "' data-title='" + data.name + "' id='delete' " + " class='btn btn-danger'>Xóa</button></td></tr>");
+          }
+        }
+      });
+    });
+
+
+
+
+    //Delete modeal
+
+
+    $(document).on('click', '.delete', function() {
+      // $('.modal-title').text('Add');
+      $('#deleteModal').modal('show');
+    });
+    // alert(id);
+    id = $(this).data('id');
+    //   alert(id);
+    // $('.modal-footer').on('click', '.xoa', function() {
+    $(document).on('click', '.xoa', function() {
+      $.ajaxSetup({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });
+      id = $('.delete').data('id');
+      $.ajax({
+        type: 'DELETE',
+        url: 'admincp/loaisanpham/' + id,
+        data: {
+          '_token': $('input[name=_token]').val(),
+        },
+        success: function (data) {
+          toastr.success('Successfully deleted Post!', 'Success Alert', {timeOut: 500});
+          $('.item' + data.id).remove();
+        }
+      });
+    });

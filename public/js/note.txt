@@ -1,0 +1,163 @@
+$(document).ready(function(){
+
+    $(document).on('click', '#add', function() {
+
+        $('#addModal').modal('show');
+    });
+
+    $('.modal-footer').on('click', '.add', function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url:  'admincp/sanpham',
+            type: 'POST',
+            data: {
+                'name'    : $('#name_add').val(),
+                'id_type' : $('#typeAdd').val(),
+                'tomtat'  : $('#tomtat_add').val(),
+                'danhgia' : $('#danhgia_add').val(),
+                'gia'     : $('#gia_add').val()
+            },
+            success:function(data){
+                // alert(data.id);
+                // console.log(data.type[(data.sanpham.id_type-1)].loaisanpham);
+                // console.log(data.sanpham.loaisanpham);
+                $('.errorName').addClass('hidden');
+                $('.errorDanhgia').addClass('hidden');
+                $('.errorGia').addClass('hidden');
+                if(data.errors){
+                    setTimeout(function () {
+                        $('#addModal').modal('show');
+                        toastr.error('Validation error!', 'Error Alert', {timeOut: 500});
+                    }, 500);
+                    if(data.errors.name){
+                        $('.errorName').removeClass('hidden');
+                        $('.errorName').text(data.errors.name);
+                    }
+                    if(data.errors.tomtat){
+                        $('.errorTT').removeClass('hidden');
+                        $('.errorTT').text(data.errors.tomtat);
+                    }
+                    if(data.errors.danhgia){
+                        $('.errorDanhgia').removeClass('hidden');
+                        $('.errorDanhgia').text(data.errors.danhgia);
+                    }
+                    if(data.errors.gia){
+                        $('.errorGia').removeClass('hidden');
+                        $('.errorGia').text(data.errors.gia);
+                    }
+                }else{
+
+                    toastr.success('Successfully added Post!', 'Success Alert', {timeOut: 5000});
+                    // $('#postTable').append("<tr class='item" + data.id + "'>" + "<td>" + data.name + "</td><td>" + data.danhgia + "</td><td>" + data.gia + "</td><td><button data-id='" + data.id + "' data-title='" + data.name "' id='show' class='btn btn-success'>Xem</button><button data-id='" + data.id + "' data-title='" + data.name + "' id='edit' class='btn btn-primary'>Sửa</button><button data-id='" + data.id "' data-title='" + data.name + "' id='delete' class='btn btn-danger'>Xóa</button></td></tr>");
+                    // $('#postTable').append("<tr class='item" + data.id + "'>" + "<td>" + data.name + "</td><td>" + data.tomtat + "</td><td>" + data.danhgia + "</td><td>" + data.gia + " VNĐ</td><td><button data-id='" + data.id + "' data-title='" + data.name + "' id='edit' " + " class='btn btn-primary'><span class='glyphicon glyphicon-edit'> Sửa </button><button data-id='" + data.id + "' data-title='" + data.name + "' class='btn btn-danger delete'><span class='glyphicon glyphicon-trash'> Xóa </button></td></tr>");
+
+                    $('#postTable').append("<tr class='item" + data.sanpham.id + "'>" + "<td>" + data.sanpham.name + "</td><td>" + data.type[(data.sanpham.id_type-1)].loaisanpham + "</td><td>" + data.sanpham.tomtat + "</td><td>" + data.sanpham.danhgia + "</td><td>" + data.sanpham.gia + " VNĐ</td><td><button data-id='" + data.sanpham.id + "' data-title='" + data.sanpham.name + "' id='edit' " + " class='btn btn-primary'><span class='glyphicon glyphicon-edit'> Sửa </button><button data-id='" + data.sanpham.id + "' data-title='" + data.sanpham.name + "' class='btn btn-danger delete'><span class='glyphicon glyphicon-trash'> Xóa </button></td></tr>");
+
+                }
+            }
+        });
+    });
+
+    //Modal Edit
+
+    $(document).on('click', '#edit', function() {
+        // $('.modal-title').text('Add');
+        $('#editModal').modal('show');
+        id = $(this).data('id');
+        // alert(id);
+    });
+    $('.modal-footer').on('click', '.edit', function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // id = $(this).data('id');
+        $.ajax({
+            url:  'admincp/sanpham/'+id ,
+            type: 'PUT',
+            data: {
+                'name': $('#name_edit').val(),
+                // 'anh' : $('#img_edit').val(),
+                'id_type' : $('#typeEdit').val(),
+                'tomtat' : $('#tomtat_edit').val(),
+                'danhgia' : $('#danhgia_edit').val(),
+                'gia'     : $('#gia_edit').val()
+            },
+            success:function(data){
+                // alert(data.id);
+                alert(data.type[(data.sanpham.id_type-1)].loaisanpham);
+                console.log(data);
+                $('.errorName').addClass('hidden');
+                $('.errorDanhgia').addClass('hidden');
+                $('.errorGia').addClass('hidden');
+                if(data.errors){
+                    setTimeout(function () {
+                        $('#editModal').modal('show');
+                        toastr.error('Validation error!', 'Error Alert', {timeOut: 500});
+                    }, 500);
+                    if(data.errors.name){
+                        $('.errorName').removeClass('hidden');
+                        $('.errorName').text(data.errors.name);
+                    }
+                    if(data.errors.tomtat){
+                        $('.errorTT').removeClass('hidden');
+                        $('.errorTT').text(data.errors.tomtat);
+                    }
+                    if(data.errors.danhgia){
+                        $('.errorDanhgia').removeClass('hidden');
+                        $('.errorDanhgia').text(data.errors.danhgia);
+                    }
+                    if(data.errors.gia){
+                        $('.errorGia').removeClass('hidden');
+                        $('.errorGia').text(data.errors.gia);
+                    }
+                }else{
+                    toastr.success('Successfully edited Product!', 'Success Alert', {timeOut: 5000});
+                    $('.item' + data.sanpham.id).replaceWith("<tr class='item" + data.sanpham.id + "'>" + "<td>" + data.sanpham.name + "</td><td>" + data.type[(data.sanpham.id_type-1)].loaisanpham + "</td><td>" + data.sanpham.tomtat + "</td><td>" + data.sanpham.danhgia + "</td><td>" + data.sanpham.gia + " VNĐ</td><td><button data-id='" + data.sanpham.id + "' data-title='" + data.sanpham.name + "' id='edit' " + " class='btn btn-primary'><span class='glyphicon glyphicon-edit'> Sửa </button><button data-id='" + data.sanpham.id + "' data-title='" + data.sanpham.name + "' class='btn btn-danger delete'><span class='glyphicon glyphicon-trash'> Xóa </button></td></tr>");
+                    // $('.item' + data.id).replaceWith("<tr class='item" + data.id + "'>" + "<td>" + data.name + "</td><td>" + data.tomtat + "</td><td>" + data.danhgia + "</td><td>" + data.gia + "</td><td><button data-id='" + data.id + "' data-title='" + data.name + "' id='edit' " + " class='btn btn-primary'><span class='glyphicon glyphicon-edit'> Sửa </button><button data-id='" + data.id + "' data-title='" + data.name + "' id='delete' " + " class='btn btn-danger'><span class='glyphicon glyphicon-trash'> Xóa </button></td></tr>");
+                    // $('#postTable').append("<tr class='item" + data.id + "'>" + "<td>" + data.name + "</td><td>" + data.danhgia + "</td><td>" + data.gia + "</td><td><button data-id='" + data.id + "' data-title='" + data.name "' id='show' class='btn btn-success'>Xem</button><button data-id='" + data.id + "' data-title='" + data.name + "' id='edit' class='btn btn-primary'>Sửa</button><button data-id='" + data.id "' data-title='" + data.name + "' id='delete' class='btn btn-danger'>Xóa</button></td></tr>");
+                    // $('#postTable').append("<tr class='item" + data.id + "'>" + "<td>" + data.name + "</td><td>" + data.tomtat + "</td><td>" + data.danhgia + "</td><td>" + data.gia + "</td><td><button data-id='" + data.id + "' data-title='" + data.name + "' id='show' " + " class='btn btn-success'>Xem</button><button data-id='" + data.id + "' data-title='" + data.name + "' id='edit' " + " class='btn btn-primary'>Sửa</button><button data-id='" + data.id + "' data-title='" + data.name + "' id='delete' " + " class='btn btn-danger'>Xóa</button></td></tr>");
+                }
+            }
+        });
+    });
+});
+
+
+    //Delete product
+
+
+    $(document).on('click', '.delete', function() {
+        // $('.modal-title').text('Add');
+        $('#deleteModal').modal('show');
+    });
+    // alert(id);
+    id = $(this).data('id');
+    //   alert(id);
+    // $('.modal-footer').on('click', '.xoa', function() {
+    $('.xoa').click(function(){
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        id = $('.delete').data('id');
+        $.ajax({
+            type: 'DELETE',
+            url: 'admincp/sanpham/' + id,
+            data: {
+                '_token': $('input[name=_token]').val(),
+            },
+            success: function(data) {
+                toastr.success('Successfully deleted Post!', 'Success Alert', {timeOut: 500});
+                $('.item' + data['id']).remove();
+            }
+        });
+    });

@@ -1,0 +1,122 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Support\Facades\Input;
+use Illuminate\Http\Request;
+use Validator;
+use Response;
+use App\SanPham;
+use View;
+use App\Http\Requests\RequestSanPham;
+
+class SanPhamController extends Controller
+{
+    protected $rules =
+    [
+        'name' => 'required|min:2|max:32|',
+        // 'anh' => 'required|min:2|max:128|',
+        'tomtat' => 'required|min:2|max:500|',
+        'danhgia' => 'required|min:1|max:2'
+    ];
+
+    public function index()
+    {
+       $sanpham = SanPham::all();
+    //    var_dump($sanpham['name']);  die;
+       return view('admincp.sanpham.list', ['sanpham'=>$sanpham]);
+    }
+
+    public function create()
+    {
+       return view('admincp.sanpham.add');
+    }
+
+    public function store(Request $request)
+    {
+        // echo $rules;
+       $validator = Validator::make($request->all(),$this->rules);
+       if($validator->fails()){
+            return Response::json(array('errors' => $validator->getMessageBag()->toArray()));
+       }else{
+            $sanpham = new SanPham;
+            $sanpham->name    = $request->name;
+            // $sanpham->anh     = $request->anh;
+            $sanpham->tomtat  = $request->tomtat;
+            $sanpham->danhgia = $request->danhgia;
+            $sanpham->gia     = $request->gia;
+
+            $sanpham->save();
+            return response()-> json($sanpham);
+       }
+    }
+
+    public function show($id)
+    {
+        $post = SanPham::findOrFail($id);
+
+        return view('sanpham.show', ['sanpham' => $post]);
+    }
+
+    public function edit($id){
+
+    }
+
+    public function update(Request $request, $id)
+    {
+
+        $validator = Validator::make(Input::all(), $this->rules);
+        if ($validator->fails()) {
+            return Response::json(array('errors' => $validator->getMessageBag()->toArray()));
+        } else {
+            $post = SanPham::findOrFail($id);
+            $post->name = $request->name;
+            $post->tomtat = $request->tomtat;
+            $post->danhgia = $request->danhgia;
+            $post->gia     = $request->gia;
+            $post->save();
+            return response()->json($post);
+        }
+    }
+
+    public function destroy($id)
+    {
+        $sanpham = SanPham::findOrFail($id);
+        $sanpham->delete();
+        return response()->json($sanpham);
+    }
+
+    public function changeStatus()
+    {
+        // $id = Input::get('id');
+
+        // $post = Post::findOrFail($id);
+        // $post->is_published = !$post->is_published;
+        // $post->save();
+
+        // return response()->json($post);
+    }
+}
+
+
+// if($request->hasFile('anh')){
+//     $file = $request->file('anh');
+
+//     $name = $file->getClientOriginalName();
+
+//     // $img  =  $name;
+
+//     echo $name;
+// }
+
+
+
+
+
+
+
+
+
+
+
+/Ajax

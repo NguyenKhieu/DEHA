@@ -1,0 +1,82 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateSanphamTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        // Schema::create('sanphams', function (Blueprint $table) {
+        //     $table->bigIncrements('id');
+        //     $table->timestamps();
+        // });
+
+        Schema::create('sanpham', function (Blueprint $table) {
+            $table->increments('id')->unsigned();
+            $table->string('name',191);
+            $table->string('anh',191)->nullable();
+            $table->string('tomtat');
+            $table->integer('danhgia');
+            $table->integer('gia');
+            $table->integer('id_type')->nullable()->unsigned();
+            $table->foreign('id_type')->references('id')->on('producttype');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('sanpham');
+    }
+}
+
+
+
+
+
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateProducttypeTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('producttype', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('loaisanpham');
+            $table->string('thuonghieu');
+            $table->string('noidung');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('producttype');
+    }
+}
