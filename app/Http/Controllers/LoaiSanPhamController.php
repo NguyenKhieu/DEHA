@@ -96,4 +96,29 @@ class LoaiSanPhamController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make(Input::all(), $this->rules);
+        if ($validator->fails()) {
+            return Response::json(array('errors' => $validator->getMessageBag()->toArray()));
+        } else {
+
+            $edit = $this->type->updateType($request->all(), $id);
+            $type = ProductType::findOrFail($id);
+            return response()->json($type);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $delete = ProductType::findOrFail($id);
+        $delete->delete();
+        return response()->json($delete);
+    }
 }
